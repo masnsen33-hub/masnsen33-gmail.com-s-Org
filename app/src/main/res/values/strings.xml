@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Tasniremt</string>
+    <string name="app_subtitle">Tamazight Historical Lexicon &amp; OCR</string>
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_in_headline">Tasniremt n Umezruy</string>
+    <string name="sign_in_description">Multilingual Tamazight, Arabic, French, and English historical dictionary with OCR document parsing and cross-device cloud sync.</string>
+    <string name="nav_lexicon">Lexicon</string>
+    <string name="nav_scanner">OCR Scan</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_contribute">Contribute</string>
+    <string name="search_placeholder">Search Tamazight, French, Arabic, English…</string>
+    <string name="camera_permission_rationale">Camera access is needed only to photograph pages or historical documents for OCR extraction.</string>
+</resources>

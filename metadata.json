@@ -1,0 +1,6 @@
+{
+  "name": "Tasniremt",
+  "description": "OCR-powered multilingual Tamazight-French-Arabic-English historical dictionary and communal lexicon with cloud sync and offline viewing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

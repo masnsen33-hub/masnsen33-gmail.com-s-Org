@@ -1,0 +1,279 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User preferences and cross-device sync settings.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated Google user UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name."
+        },
+        "themeMode": {
+          "type": "string",
+          "enum": ["SYSTEM", "LIGHT", "DARK"],
+          "description": "Preferred UI appearance theme."
+        },
+        "preferredLanguage": {
+          "type": "string",
+          "enum": ["ALL", "TAMAZIGHT", "ARABIC", "FRENCH", "ENGLISH"],
+          "description": "Preferred translation focus language."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp (submitted as FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp (submitted as FieldValue.serverTimestamp())."
+        }
+      },
+      "required": ["userId", "displayName", "themeMode", "preferredLanguage", "createdAt", "updatedAt"]
+    },
+    "WordBookmark": {
+      "title": "WordBookmark",
+      "description": "User-saved dictionary term synced across devices for offline study.",
+      "type": "object",
+      "properties": {
+        "entryId": {
+          "type": "string",
+          "description": "Identifier of the dictionary or communal entry."
+        },
+        "tamazightTerm": {
+          "type": "string"
+        },
+        "tamazightPlural": {
+          "type": "string"
+        },
+        "tifinagh": {
+          "type": "string"
+        },
+        "frenchTerm": {
+          "type": "string"
+        },
+        "arabicMeaning": {
+          "type": "string"
+        },
+        "englishMeaning": {
+          "type": "string"
+        },
+        "etymologyNote": {
+          "type": "string"
+        },
+        "personalNote": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["entryId", "tamazightTerm", "frenchTerm", "category", "createdAt", "updatedAt"]
+    },
+    "ScannedDocument": {
+      "title": "ScannedDocument",
+      "description": "OCR-parsed document metadata synced across devices.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["CAMERA", "IMAGE", "PDF_PAGE", "BOOK_PDF"]
+        },
+        "sourcePage": {
+          "type": "integer"
+        },
+        "rawOcrText": {
+          "type": "string"
+        },
+        "detectedTermsCount": {
+          "type": "integer"
+        },
+        "summaryNote": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["title", "sourceType", "sourcePage", "rawOcrText", "detectedTermsCount", "createdAt", "updatedAt"]
+    },
+    "ScannedTerm": {
+      "title": "ScannedTerm",
+      "description": "Structured dictionary field parsed by OCR from a ScannedDocument.",
+      "type": "object",
+      "properties": {
+        "tamazightTerm": {
+          "type": "string"
+        },
+        "tamazightPlural": {
+          "type": "string"
+        },
+        "tifinagh": {
+          "type": "string"
+        },
+        "frenchTerm": {
+          "type": "string"
+        },
+        "arabicMeaning": {
+          "type": "string"
+        },
+        "englishMeaning": {
+          "type": "string"
+        },
+        "etymologyNote": {
+          "type": "string"
+        },
+        "dialectTags": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["tamazightTerm", "frenchTerm", "arabicMeaning", "englishMeaning", "createdAt", "updatedAt"]
+    },
+    "CommunityWord": {
+      "title": "CommunityWord",
+      "description": "User-contributed Tamazight word enriched with Arabic, French, and English translations for communal learning.",
+      "type": "object",
+      "properties": {
+        "authorUid": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["COMMUNITY"]
+        },
+        "tamazightTerm": {
+          "type": "string"
+        },
+        "tamazightPlural": {
+          "type": "string"
+        },
+        "tifinagh": {
+          "type": "string"
+        },
+        "arabicMeaning": {
+          "type": "string"
+        },
+        "frenchMeaning": {
+          "type": "string"
+        },
+        "englishMeaning": {
+          "type": "string"
+        },
+        "dialect": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "exampleNote": {
+          "type": "string"
+        },
+        "endorsementsCount": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submitted as FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "authorUid",
+        "authorName",
+        "visibility",
+        "tamazightTerm",
+        "arabicMeaning",
+        "frenchMeaning",
+        "englishMeaning",
+        "category",
+        "endorsementsCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "WordEndorsement": {
+      "title": "WordEndorsement",
+      "description": "Tracks a user's single endorsement on a communal dictionary word.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Authenticated user's sync settings and profile."
+    },
+    "/users/{userId}/bookmarks/{bookmarkId}": {
+      "schema": { "$ref": "#/entities/WordBookmark" },
+      "description": "Per-user saved dictionary entries with multilingual glosses and personal study notes."
+    },
+    "/users/{userId}/scanned_documents/{docId}": {
+      "schema": { "$ref": "#/entities/ScannedDocument" },
+      "description": "Per-user OCR-parsed documents synced for cross-device and offline access."
+    },
+    "/users/{userId}/scanned_documents/{docId}/extracted_terms/{termId}": {
+      "schema": { "$ref": "#/entities/ScannedTerm" },
+      "description": "Individual parsed multilingual dictionary entries extracted from a scanned document."
+    },
+    "/community_words/{wordId}": {
+      "schema": { "$ref": "#/entities/CommunityWord" },
+      "description": "Shared communal Tamazight lexicon contributed by learners and scholars."
+    },
+    "/community_words/{wordId}/endorsements/{endorserId}": {
+      "schema": { "$ref": "#/entities/WordEndorsement" },
+      "description": "Per-user endorsement lock document ensuring one endorsement per learner."
+    }
+  }
+}

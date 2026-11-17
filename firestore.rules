@@ -1,0 +1,242 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+             data.themeMode in ['SYSTEM', 'LIGHT', 'DARK'] &&
+             data.preferredLanguage in ['ALL', 'TAMAZIGHT', 'ARABIC', 'FRENCH', 'ENGLISH'] &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidWordBookmark(data) {
+      return data.entryId is string && data.entryId.size() >= 1 && data.entryId.size() <= 128 &&
+             data.tamazightTerm is string && data.tamazightTerm.size() >= 1 && data.tamazightTerm.size() <= 300 &&
+             data.frenchTerm is string && data.frenchTerm.size() >= 1 && data.frenchTerm.size() <= 300 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 80 &&
+             (!('tamazightPlural' in data) || data.tamazightPlural == null || (data.tamazightPlural is string && data.tamazightPlural.size() <= 300)) &&
+             (!('tifinagh' in data) || data.tifinagh == null || (data.tifinagh is string && data.tifinagh.size() <= 300)) &&
+             (!('arabicMeaning' in data) || data.arabicMeaning == null || (data.arabicMeaning is string && data.arabicMeaning.size() <= 600)) &&
+             (!('englishMeaning' in data) || data.englishMeaning == null || (data.englishMeaning is string && data.englishMeaning.size() <= 600)) &&
+             (!('etymologyNote' in data) || data.etymologyNote == null || (data.etymologyNote is string && data.etymologyNote.size() <= 1500)) &&
+             (!('personalNote' in data) || data.personalNote == null || (data.personalNote is string && data.personalNote.size() <= 1000)) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidScannedDocument(data) {
+      return data.title is string && data.title.size() >= 1 && data.title.size() <= 160 &&
+             data.sourceType in ['CAMERA', 'IMAGE', 'PDF_PAGE', 'BOOK_PDF'] &&
+             data.sourcePage is int && data.sourcePage >= 0 && data.sourcePage <= 5000 &&
+             data.rawOcrText is string && data.rawOcrText.size() <= 15000 &&
+             data.detectedTermsCount is int && data.detectedTermsCount >= 0 && data.detectedTermsCount <= 200 &&
+             (!('summaryNote' in data) || data.summaryNote == null || (data.summaryNote is string && data.summaryNote.size() <= 2000)) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidScannedTerm(data) {
+      return data.tamazightTerm is string && data.tamazightTerm.size() >= 1 && data.tamazightTerm.size() <= 300 &&
+             data.frenchTerm is string && data.frenchTerm.size() >= 1 && data.frenchTerm.size() <= 300 &&
+             data.arabicMeaning is string && data.arabicMeaning.size() <= 600 &&
+             data.englishMeaning is string && data.englishMeaning.size() <= 600 &&
+             (!('tamazightPlural' in data) || data.tamazightPlural == null || (data.tamazightPlural is string && data.tamazightPlural.size() <= 300)) &&
+             (!('tifinagh' in data) || data.tifinagh == null || (data.tifinagh is string && data.tifinagh.size() <= 300)) &&
+             (!('etymologyNote' in data) || data.etymologyNote == null || (data.etymologyNote is string && data.etymologyNote.size() <= 1500)) &&
+             (!('dialectTags' in data) || data.dialectTags == null || (data.dialectTags is string && data.dialectTags.size() <= 120)) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidCommunityWord(data) {
+      return data.authorUid is string && data.authorUid.size() >= 1 && data.authorUid.size() <= 128 &&
+             data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 100 &&
+             data.visibility == 'COMMUNITY' &&
+             data.tamazightTerm is string && data.tamazightTerm.size() >= 1 && data.tamazightTerm.size() <= 250 &&
+             data.arabicMeaning is string && data.arabicMeaning.size() >= 1 && data.arabicMeaning.size() <= 500 &&
+             data.frenchMeaning is string && data.frenchMeaning.size() >= 1 && data.frenchMeaning.size() <= 500 &&
+             data.englishMeaning is string && data.englishMeaning.size() >= 1 && data.englishMeaning.size() <= 500 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 80 &&
+             data.endorsementsCount is int && data.endorsementsCount >= 0 && data.endorsementsCount <= 1000000 &&
+             (!('tamazightPlural' in data) || data.tamazightPlural == null || (data.tamazightPlural is string && data.tamazightPlural.size() <= 250)) &&
+             (!('tifinagh' in data) || data.tifinagh == null || (data.tifinagh is string && data.tifinagh.size() <= 250)) &&
+             (!('dialect' in data) || data.dialect == null || (data.dialect is string && data.dialect.size() <= 80)) &&
+             (!('exampleNote' in data) || data.exampleNote == null || (data.exampleNote is string && data.exampleNote.size() <= 1000)) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidWordEndorsement(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             isValidTimestamp(data.createdAt);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().keys().hasAll(['userId', 'displayName', 'themeMode', 'preferredLanguage', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'displayName', 'themeMode', 'preferredLanguage', 'createdAt', 'updatedAt']) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'themeMode', 'preferredLanguage', 'updatedAt']);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /bookmarks/{bookmarkId} {
+        allow get: if isOwner(userId) && isValidId(bookmarkId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(bookmarkId) &&
+                         incoming().keys().hasAll(['entryId', 'tamazightTerm', 'frenchTerm', 'category', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['entryId', 'tamazightTerm', 'tamazightPlural', 'tifinagh', 'frenchTerm', 'arabicMeaning', 'englishMeaning', 'etymologyNote', 'personalNote', 'category', 'createdAt', 'updatedAt']) &&
+                         isValidWordBookmark(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(bookmarkId) &&
+                         isValidWordBookmark(incoming()) &&
+                         incoming().entryId == existing().entryId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['tamazightTerm', 'tamazightPlural', 'tifinagh', 'frenchTerm', 'arabicMeaning', 'englishMeaning', 'etymologyNote', 'personalNote', 'category', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(bookmarkId);
+      }
+
+      match /scanned_documents/{docId} {
+        allow get: if isOwner(userId) && isValidId(docId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(docId) &&
+                         incoming().keys().hasAll(['title', 'sourceType', 'sourcePage', 'rawOcrText', 'detectedTermsCount', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['title', 'sourceType', 'sourcePage', 'rawOcrText', 'detectedTermsCount', 'summaryNote', 'createdAt', 'updatedAt']) &&
+                         isValidScannedDocument(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(docId) &&
+                         isValidScannedDocument(incoming()) &&
+                         incoming().sourceType == existing().sourceType &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'sourcePage', 'rawOcrText', 'detectedTermsCount', 'summaryNote', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(docId);
+
+        match /extracted_terms/{termId} {
+          allow get: if isOwner(userId) && isValidId(docId) && isValidId(termId);
+          allow list: if isOwner(userId) && isValidId(docId);
+
+          allow create: if isOwner(userId) &&
+                           isValidId(docId) &&
+                           isValidId(termId) &&
+                           incoming().keys().hasAll(['tamazightTerm', 'frenchTerm', 'arabicMeaning', 'englishMeaning', 'createdAt', 'updatedAt']) &&
+                           incoming().keys().hasOnly(['tamazightTerm', 'tamazightPlural', 'tifinagh', 'frenchTerm', 'arabicMeaning', 'englishMeaning', 'etymologyNote', 'dialectTags', 'createdAt', 'updatedAt']) &&
+                           isValidScannedTerm(incoming()) &&
+                           existsAfter(/databases/$(database)/documents/users/$(userId)/scanned_documents/$(docId));
+
+          allow update: if isOwner(userId) &&
+                           isValidId(docId) &&
+                           isValidId(termId) &&
+                           isValidScannedTerm(incoming()) &&
+                           incoming().createdAt == existing().createdAt &&
+                           incoming().diff(existing()).affectedKeys().hasOnly(['tamazightTerm', 'tamazightPlural', 'tifinagh', 'frenchTerm', 'arabicMeaning', 'englishMeaning', 'etymologyNote', 'dialectTags', 'updatedAt']);
+
+          allow delete: if isOwner(userId) && isValidId(docId) && isValidId(termId);
+        }
+      }
+    }
+
+    match /community_words/{wordId} {
+      allow get: if isSignedIn() && isValidId(wordId) && existing().visibility == 'COMMUNITY';
+      allow list: if isSignedIn() && existing().visibility == 'COMMUNITY';
+
+      allow create: if isSignedIn() &&
+                       isValidId(wordId) &&
+                       incoming().authorUid == request.auth.uid &&
+                       incoming().visibility == 'COMMUNITY' &&
+                       incoming().endorsementsCount == 0 &&
+                       incoming().keys().hasAll(['authorUid', 'authorName', 'visibility', 'tamazightTerm', 'arabicMeaning', 'frenchMeaning', 'englishMeaning', 'category', 'endorsementsCount', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['authorUid', 'authorName', 'visibility', 'tamazightTerm', 'tamazightPlural', 'tifinagh', 'arabicMeaning', 'frenchMeaning', 'englishMeaning', 'dialect', 'category', 'exampleNote', 'endorsementsCount', 'createdAt', 'updatedAt']) &&
+                       isValidCommunityWord(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(wordId) &&
+                       isValidCommunityWord(incoming()) &&
+                       incoming().authorUid == existing().authorUid &&
+                       incoming().visibility == existing().visibility &&
+                       incoming().createdAt == existing().createdAt && (
+                         // Tier 1: Author edits word details
+                         (existing().authorUid == request.auth.uid &&
+                          incoming().endorsementsCount == existing().endorsementsCount &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['tamazightTerm', 'tamazightPlural', 'tifinagh', 'arabicMeaning', 'frenchMeaning', 'englishMeaning', 'dialect', 'category', 'exampleNote', 'updatedAt'])) ||
+                         // Tier 2: Community learner endorses once via atomic batch creating endorsement doc
+                         (incoming().endorsementsCount == existing().endorsementsCount + 1 &&
+                          incoming().diff(existing()).affectedKeys().hasOnly(['endorsementsCount', 'updatedAt']) &&
+                          !exists(/databases/$(database)/documents/community_words/$(wordId)/endorsements/$(request.auth.uid)) &&
+                          existsAfter(/databases/$(database)/documents/community_words/$(wordId)/endorsements/$(request.auth.uid)))
+                       );
+
+      allow delete: if isSignedIn() &&
+                       isValidId(wordId) &&
+                       existing().authorUid == request.auth.uid;
+
+      match /endorsements/{endorserId} {
+        allow get: if isSignedIn() && isValidId(wordId) && isValidId(endorserId) && request.auth.uid == endorserId;
+        allow list: if false;
+
+        allow create: if isSignedIn() &&
+                         isValidId(wordId) &&
+                         isValidId(endorserId) &&
+                         request.auth.uid == endorserId &&
+                         incoming().userId == request.auth.uid &&
+                         incoming().keys().hasAll(['userId', 'createdAt']) &&
+                         incoming().keys().hasOnly(['userId', 'createdAt']) &&
+                         isValidWordEndorsement(incoming()) &&
+                         exists(/databases/$(database)/documents/community_words/$(wordId));
+
+        allow update: if false;
+        allow delete: if isSignedIn() && isValidId(wordId) && isValidId(endorserId) && request.auth.uid == endorserId;
+      }
+    }
+  }
+}
